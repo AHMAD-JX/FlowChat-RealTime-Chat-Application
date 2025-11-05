@@ -1,0 +1,155 @@
+### FlowChat API Testing
+### Use with REST Client Extension in VS Code
+
+@baseUrl = http://localhost:5000/api
+@contentType = application/json
+
+### Health Check
+GET http://localhost:5000/api/health
+
+###
+
+### Register New User
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "phone": "+1234567890",
+  "password": "Test123456",
+  "confirmPassword": "Test123456",
+  "countryCode": "+1"
+}
+
+###
+
+### Login User (with Email)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "emailOrPhone": "test@example.com",
+  "password": "Test123456"
+}
+
+###
+
+### Login User (with Phone)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "emailOrPhone": "+1234567890",
+  "password": "Test123456"
+}
+
+###
+
+### Get Current User (Protected Route)
+# Replace YOUR_JWT_TOKEN with the actual token from login response
+GET {{baseUrl}}/auth/me
+Authorization: Bearer YOUR_JWT_TOKEN
+
+###
+
+### Update Password (Protected Route)
+PATCH {{baseUrl}}/auth/update-password
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: {{contentType}}
+
+{
+  "currentPassword": "Test123456",
+  "newPassword": "NewPass123456",
+  "confirmNewPassword": "NewPass123456"
+}
+
+###
+
+### Check Username Availability
+GET {{baseUrl}}/auth/check-username/testuser
+
+###
+
+### Check Email Availability
+GET {{baseUrl}}/auth/check-email/test@example.com
+
+###
+
+### Logout
+POST {{baseUrl}}/auth/logout
+
+###
+
+### Test with Invalid Credentials
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "emailOrPhone": "test@example.com",
+  "password": "wrongpassword"
+}
+
+###
+
+### Test with Missing Fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser2",
+  "email": "test2@example.com"
+}
+
+###
+
+### Test with Weak Password
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser3",
+  "email": "test3@example.com",
+  "password": "weak",
+  "confirmPassword": "weak"
+}
+
+###
+
+### Test with Invalid Email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser4",
+  "email": "invalidemail",
+  "password": "Test123456",
+  "confirmPassword": "Test123456"
+}
+
+###
+
+### Test Username with Special Characters
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "test@user",
+  "email": "test5@example.com",
+  "password": "Test123456",
+  "confirmPassword": "Test123456"
+}
+
+###
+
+### Test Password Mismatch
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser6",
+  "email": "test6@example.com",
+  "password": "Test123456",
+  "confirmPassword": "DifferentPass123"
+}
+

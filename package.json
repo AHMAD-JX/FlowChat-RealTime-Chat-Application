@@ -1,0 +1,30 @@
+{
+  "name": "flowchat",
+  "version": "1.0.0",
+  "description": "FlowChat - Real-Time Chat Application",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start"
+  },
+  "keywords": [
+    "chat",
+    "real-time",
+    "messaging",
+    "next.js",
+    "express",
+    "mongodb"
+  ],
+  "author": "FlowChat Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/flowchat.git"
+  }
+}
+
