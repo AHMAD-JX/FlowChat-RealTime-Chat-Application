@@ -1,4 +1,4 @@
-# FlowChat - Enterprise-Grade Real-Time Chat Application 💬
+# FlowChat - Enterprise-Grade Real-Time Chat Application
 
 <div align="center">
 
@@ -14,6 +14,12 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.0-green?style=flat&logo=mongodb)](https://www.mongodb.com/)
 [![Socket.io](https://img.shields.io/badge/Socket.io-4.8-black?style=flat&logo=socket.io)](https://socket.io/)
 [![Redis](https://img.shields.io/badge/Redis-5.8-red?style=flat&logo=redis)](https://redis.io/)
+
+
+
+## 🌀 Animations
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/01247789d1b10845a9c8911b8f40934d34fc7aa5/GIF_1.gif)
+
 
 [Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [Deployment](#-deployment) • [Contributing](#-contributing)
 
