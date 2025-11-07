@@ -19,7 +19,13 @@
 
 ## 🌀 Animations
 ![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/01247789d1b10845a9c8911b8f40934d34fc7aa5/GIF_1.gif)
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/f8bc0bd8779bc5f0c3ee00fc71f3084feee0cfee/scripts/GIF_2.gif)
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/7c50377ceb0d63be9cfbb36cc096d7a21851a0d9/scripts/GIF_3.gif)
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/7c50377ceb0d63be9cfbb36cc096d7a21851a0d9/scripts/GIF_4.gif)
 
+## 🌀 IMG
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/7c50377ceb0d63be9cfbb36cc096d7a21851a0d9/scripts/img_1.png)
+![GIF 1](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/blob/7c50377ceb0d63be9cfbb36cc096d7a21851a0d9/scripts/img_2.png)
 
 [Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [Deployment](#-deployment) • [Contributing](#-contributing)
 
