@@ -1045,19 +1045,19 @@ socket.on('connect', () => {
 - [x] Image lightbox
 
 ### 🚧 Phase 3: Advanced Features (In Progress)
-- [ ] Group chats
-- [ ] Message reactions
-- [ ] Message forwarding
+- [x] Group chats
+- [x] Message reactions
+- [x] Message forwarding
 - [ ] Voice messages
 - [ ] Video calls
 - [ ] Screen sharing
-- [ ] File sharing (documents)
+- [x] File sharing (documents)
 
 ### 📋 Phase 4: Enterprise Features (Planned)
-- [ ] End-to-end encryption
-- [ ] Message search
-- [ ] Message archiving
-- [ ] Push notifications
+- [x] End-to-end encryption
+- [x] Message search
+- [x] Message archiving
+- [x] Push notifications
 - [ ] Email notifications
 - [ ] Two-factor authentication
 - [ ] Admin dashboard
@@ -1115,10 +1115,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 For support and questions:
 
-- 📧 Email: support@flowchat.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/flowchat/issues)
-- 📖 Documentation: [Full Documentation](https://docs.flowchat.com)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/flowchat/discussions)
+- 📧 Email: Ahmadjx1stt@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/issues)
+- 📖 Documentation: [Full Documentation]()
+- 💬 Discussions: [GitHub Discussions](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application/discussions)
 
 ---
 
@@ -1151,8 +1151,8 @@ For support and questions:
 
 ⭐ **Star us on GitHub if you find this project helpful!**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/flowchat?style=social)](https://github.com/yourusername/flowchat)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/flowchat?style=social)](https://github.com/yourusername/flowchat)
+[![GitHub stars](https://img.shields.io/github/starsAHMAD-JX/FlowChat-RealTime-Chat-Application?style=social)](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application.git)
+[![GitHub forks](https://img.shields.io/github/forks/yourusername/flowchat?style=social)](https://github.com/AHMAD-JX/FlowChat-RealTime-Chat-Application.git)
 
 **Built for Enterprise | Production Ready | Scalable | Secure**
 
