@@ -7,6 +7,7 @@ import { AppError } from '../utils/AppError';
 // Ensure uploads directories exist
 const avatarsDir = path.join(__dirname, '../../public/uploads/avatars');
 const chatMediaDir = path.join(__dirname, '../../public/uploads/chat-media');
+const statusMediaDir = path.join(__dirname, '../../public/uploads/status-media');
 
 if (!fs.existsSync(avatarsDir)) {
   fs.mkdirSync(avatarsDir, { recursive: true });
@@ -14,6 +15,10 @@ if (!fs.existsSync(avatarsDir)) {
 
 if (!fs.existsSync(chatMediaDir)) {
   fs.mkdirSync(chatMediaDir, { recursive: true });
+}
+
+if (!fs.existsSync(statusMediaDir)) {
+  fs.mkdirSync(statusMediaDir, { recursive: true });
 }
 
 // Configure storage for avatars
@@ -39,6 +44,19 @@ const chatMediaStorage = multer.diskStorage({
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, `media-${uniqueSuffix}${ext}`);
+  },
+});
+
+// Configure storage for status media
+const statusMediaStorage = multer.diskStorage({
+  destination: function (_req: Request, _file: Express.Multer.File, cb) {
+    cb(null, statusMediaDir);
+  },
+  filename: function (_req: Request, file: Express.Multer.File, cb) {
+    // Generate unique filename: status-timestamp.ext
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `status-${uniqueSuffix}${ext}`);
   },
 });
 
@@ -78,6 +96,24 @@ const chatMediaFileFilter = (
   }
 };
 
+// File filter - allow images and videos for status media (same as chat media)
+const statusMediaFileFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  // Allowed extensions
+  const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|mov|avi|mkv|webm/;
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = /^(image|video)\//.test(file.mimetype);
+
+  if (extname && mimetype) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Only image and video files are allowed', 400) as any);
+  }
+};
+
 // Create multer upload instance for avatars
 export const uploadAvatar = multer({
   storage: avatarStorage,
@@ -94,6 +130,15 @@ export const uploadChatMedia = multer({
     fileSize: 50 * 1024 * 1024, // 50MB max file size for videos
   },
   fileFilter: chatMediaFileFilter,
+});
+
+// Create multer upload instance for status media
+export const uploadStatusMedia = multer({
+  storage: statusMediaStorage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size for videos
+  },
+  fileFilter: statusMediaFileFilter,
 });
 
 // Helper to delete old avatar
