@@ -16,6 +16,8 @@ export interface IStatus extends Document {
   views: IStatusView[];
   createdAt: Date;
   expiresAt: Date;
+  isExpired(): boolean;
+  addView(userId: string): void;
 }
 
 const statusSchema = new Schema<IStatus>(
@@ -94,7 +96,7 @@ statusSchema.methods.isExpired = function (): boolean {
 statusSchema.methods.addView = function (userId: string) {
   // Check if user already viewed
   const alreadyViewed = this.views.some(
-    (view) => view.user.toString() === userId
+    (view: IStatusView) => view.user.toString() === userId
   );
 
   if (!alreadyViewed) {

@@ -1,16 +1,42 @@
 import Redis from 'ioredis';
 
 // Create Redis client
-const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD || undefined,
-  retryStrategy: (times: number) => {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-  maxRetriesPerRequest: 3,
-});
+// Support both REDIS_URL (for Upstash/cloud) and individual config (for local)
+let redis: Redis;
+
+if (process.env.REDIS_URL) {
+  // For Upstash and other cloud Redis providers with TLS
+  // Parse the URL to check if it's an Upstash URL
+  const redisUrl = process.env.REDIS_URL;
+  const isUpstash = redisUrl.includes('upstash.io');
+  
+  redis = new Redis(redisUrl, {
+    ...(isUpstash && {
+      tls: {
+        rejectUnauthorized: false, // Required for Upstash
+      },
+    }),
+    retryStrategy: (times: number) => {
+      const delay = Math.min(times * 50, 2000);
+      return delay;
+    },
+    maxRetriesPerRequest: 3,
+    enableReadyCheck: true,
+    enableOfflineQueue: false,
+  });
+} else {
+  // For local Redis or custom configuration
+  redis = new Redis({
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    password: process.env.REDIS_PASSWORD || undefined,
+    retryStrategy: (times: number) => {
+      const delay = Math.min(times * 50, 2000);
+      return delay;
+    },
+    maxRetriesPerRequest: 3,
+  });
+}
 
 redis.on('connect', () => {
   console.log('✅ Redis connected successfully');

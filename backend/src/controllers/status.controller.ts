@@ -53,13 +53,13 @@ export const createStatus = catchAsync(
     if (io) {
       const friends = await Friend.find({
         $or: [
-          { user: userId, status: 'accepted' },
-          { friend: userId, status: 'accepted' },
+          { requester: userId, status: 'accepted' },
+          { recipient: userId, status: 'accepted' },
         ],
       });
 
       const friendIds = friends.map((f) =>
-        f.user.toString() === userId ? f.friend.toString() : f.user.toString()
+        f.requester.toString() === userId ? f.recipient.toString() : f.requester.toString()
       );
 
       friendIds.forEach((friendId) => {
@@ -94,13 +94,13 @@ export const getStatuses = catchAsync(
     // Get all friends
     const friends = await Friend.find({
       $or: [
-        { user: userId, status: 'accepted' },
-        { friend: userId, status: 'accepted' },
+        { requester: userId, status: 'accepted' },
+        { recipient: userId, status: 'accepted' },
       ],
     });
 
     const friendIds = friends.map((f) =>
-      f.user.toString() === userId ? f.friend.toString() : f.user.toString()
+      f.requester.toString() === userId ? f.recipient.toString() : f.requester.toString()
     );
 
     // Include current user to get their own statuses
@@ -177,8 +177,8 @@ export const getUserStatuses = catchAsync(
     if (userId !== currentUserId) {
       const friendship = await Friend.findOne({
         $or: [
-          { user: currentUserId, friend: userId, status: 'accepted' },
-          { user: userId, friend: currentUserId, status: 'accepted' },
+          { requester: currentUserId, recipient: userId, status: 'accepted' },
+          { requester: userId, recipient: currentUserId, status: 'accepted' },
         ],
       });
 
