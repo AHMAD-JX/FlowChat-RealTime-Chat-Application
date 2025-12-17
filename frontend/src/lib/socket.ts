@@ -1,6 +1,12 @@
 import { io, Socket } from 'socket.io-client';
 
+// Get Socket URL from environment variable
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
+
+// Log the URL in development to verify it's being read correctly
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔌 Socket URL:', SOCKET_URL);
+}
 
 class SocketService {
   private socket: Socket | null = null;
@@ -16,6 +22,11 @@ class SocketService {
     }
 
     this.token = token;
+
+    // Log connection attempt in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔌 Connecting to Socket.io at:', SOCKET_URL);
+    }
 
     this.socket = io(SOCKET_URL, {
       auth: {

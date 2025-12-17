@@ -8,6 +8,12 @@ export const BASE_URL = process.env.NEXT_PUBLIC_API_URL
   ? process.env.NEXT_PUBLIC_API_URL.replace('/api', '') 
   : 'http://localhost:5000';
 
+// Log the URLs in development to verify they're being read correctly
+if (process.env.NODE_ENV === 'development') {
+  console.log('🌐 API URL:', API_URL);
+  console.log('📁 Base URL:', BASE_URL);
+}
+
 export const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Important for cookies
