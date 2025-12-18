@@ -26,18 +26,21 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await authService.login({
+      const response = await authService.login({
         emailOrPhone,
         password,
       });
 
       // Success - redirect to chat page
-      router.push("/chat");
+      if (response.success) {
+        router.push("/chat");
+      }
     } catch (error: any) {
-      setError(
-        error.response?.data?.message || 
-        "Login failed. Please check your credentials."
-      );
+      console.error('Login error:', error);
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Login failed. Please check your credentials.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

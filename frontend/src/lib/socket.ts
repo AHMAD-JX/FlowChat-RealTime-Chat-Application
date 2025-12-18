@@ -40,6 +40,10 @@ class SocketService {
 
     this.socket.on('connect', () => {
       console.log('✅ Socket connected:', this.socket?.id);
+      // Emit a custom event to notify that socket is ready
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('socket:connected'));
+      }
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -141,7 +145,20 @@ class SocketService {
    */
   onNewMessage(callback: (data: any) => void): void {
     if (this.socket) {
+      // Remove existing listener to avoid duplicates
+      this.socket.off('message:receive', callback);
       this.socket.on('message:receive', callback);
+    } else {
+      // If socket not ready, wait for connection
+      const checkSocket = () => {
+        if (this.socket) {
+          this.socket.off('message:receive', callback);
+          this.socket.on('message:receive', callback);
+        } else {
+          setTimeout(checkSocket, 100);
+        }
+      };
+      checkSocket();
     }
   }
 

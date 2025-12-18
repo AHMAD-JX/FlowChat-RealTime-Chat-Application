@@ -44,10 +44,16 @@ api.interceptors.response.use(
   (error) => {
     if (typeof window !== 'undefined') {
       if (error.response?.status === 401) {
-        // Redirect to login or refresh token
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        // Only redirect if we're not already on login/signup page
+        const currentPath = window.location.pathname;
+        const isAuthPage = currentPath === '/login' || currentPath === '/signup';
+        
+        if (!isAuthPage) {
+          // Redirect to login or refresh token
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);

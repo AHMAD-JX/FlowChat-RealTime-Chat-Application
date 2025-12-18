@@ -93,3 +93,18 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Mobile chat input area - always visible at bottom */
+@media (max-width: 640px) {
+  .chat-input-container {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 10 !important;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-messages-container {
+    padding-bottom: 90px !important;
+  }
+}

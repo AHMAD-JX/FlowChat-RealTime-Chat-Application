@@ -134,87 +134,131 @@ export const useChat = (): UseChat => {
 
   // Socket event listeners
   useEffect(() => {
-    // Listen for new messages
-    const handleNewMessage = (data: { message: Message }) => {
-      setMessages(prevMessages => [...prevMessages, data.message]);
-      
-      // Update last message in chats list
-      setChats(prevChats => 
-        prevChats.map(chat => 
-          chat._id === data.message.chat
-            ? { ...chat, lastMessage: data.message, lastMessageTime: data.message.createdAt }
-            : chat
-        )
-      );
-    };
+    let cleanupFunctions: (() => void)[] = [];
+    let retryTimeout: NodeJS.Timeout | null = null;
 
-    // Listen for typing updates
-    const handleTypingUpdate = (data: { chatId: string; userId: string; isTyping: boolean }) => {
-      if (selectedChat && data.chatId === selectedChat._id) {
-        setTypingUsers(prev => {
-          if (data.isTyping) {
-            return prev.includes(data.userId) ? prev : [...prev, data.userId];
-          } else {
-            return prev.filter(id => id !== data.userId);
-          }
-        });
+    // Wait for socket to be connected before registering listeners
+    const setupListeners = () => {
+      if (!socketService.isConnected()) {
+        // Retry after a short delay if not connected
+        retryTimeout = setTimeout(setupListeners, 500);
+        return;
       }
+
+      console.log('🔌 Socket is connected, setting up listeners...');
+
+      // Listen for new messages
+      const handleNewMessage = (data: { message: Message }) => {
+        console.log('📨 New message received:', data.message);
+        setMessages(prevMessages => {
+          // Check if message already exists to avoid duplicates
+          const exists = prevMessages.some(msg => msg._id === data.message._id);
+          if (exists) return prevMessages;
+          return [...prevMessages, data.message];
+        });
+        
+        // Update last message in chats list
+        setChats(prevChats => 
+          prevChats.map(chat => 
+            chat._id === data.message.chat
+              ? { ...chat, lastMessage: data.message, lastMessageTime: data.message.createdAt }
+              : chat
+          )
+        );
+      };
+
+      // Listen for typing updates
+      const handleTypingUpdate = (data: { chatId: string; userId: string; isTyping: boolean }) => {
+        if (selectedChat && data.chatId === selectedChat._id) {
+          setTypingUsers(prev => {
+            if (data.isTyping) {
+              return prev.includes(data.userId) ? prev : [...prev, data.userId];
+            } else {
+              return prev.filter(id => id !== data.userId);
+            }
+          });
+        }
+      };
+
+      // Listen for message read receipts
+      const handleMessageRead = (data: { messageId: string; userId: string; readAt: Date }) => {
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg._id === data.messageId
+              ? {
+                  ...msg,
+                  readBy: [
+                    ...msg.readBy,
+                    { user: data.userId, readAt: data.readAt },
+                  ],
+                }
+              : msg
+          )
+        );
+      };
+
+      // Listen for user online/offline status
+      const handleUserOnline = (data: { userId: string }) => {
+        setChats(prevChats =>
+          prevChats.map(chat => ({
+            ...chat,
+            participants: chat.participants.map(p =>
+              p._id === data.userId ? { ...p, online: true } : p
+            ),
+          }))
+        );
+      };
+
+      const handleUserOffline = (data: { userId: string }) => {
+        setChats(prevChats =>
+          prevChats.map(chat => ({
+            ...chat,
+            participants: chat.participants.map(p =>
+              p._id === data.userId ? { ...p, online: false } : p
+            ),
+          }))
+        );
+      };
+
+      // Register listeners
+      socketService.onNewMessage(handleNewMessage);
+      socketService.onTypingUpdate(handleTypingUpdate);
+      socketService.onMessageRead(handleMessageRead);
+      socketService.onUserOnline(handleUserOnline);
+      socketService.onUserOffline(handleUserOffline);
+
+      // Store cleanup functions
+      cleanupFunctions.push(() => {
+        socketService.removeListener('message:receive', handleNewMessage);
+        socketService.removeListener('typing:update', handleTypingUpdate);
+        socketService.removeListener('message:read', handleMessageRead);
+        socketService.removeListener('user:online', handleUserOnline);
+        socketService.removeListener('user:offline', handleUserOffline);
+      });
     };
 
-    // Listen for message read receipts
-    const handleMessageRead = (data: { messageId: string; userId: string; readAt: Date }) => {
-      setMessages(prevMessages =>
-        prevMessages.map(msg =>
-          msg._id === data.messageId
-            ? {
-                ...msg,
-                readBy: [
-                  ...msg.readBy,
-                  { user: data.userId, readAt: data.readAt },
-                ],
-              }
-            : msg
-        )
-      );
+    // Listen for socket connection event
+    const handleSocketConnect = () => {
+      console.log('🔌 Socket connected event received, setting up listeners...');
+      setupListeners();
     };
 
-    // Listen for user online/offline status
-    const handleUserOnline = (data: { userId: string }) => {
-      setChats(prevChats =>
-        prevChats.map(chat => ({
-          ...chat,
-          participants: chat.participants.map(p =>
-            p._id === data.userId ? { ...p, online: true } : p
-          ),
-        }))
-      );
-    };
+    // Start setting up listeners immediately
+    setupListeners();
 
-    const handleUserOffline = (data: { userId: string }) => {
-      setChats(prevChats =>
-        prevChats.map(chat => ({
-          ...chat,
-          participants: chat.participants.map(p =>
-            p._id === data.userId ? { ...p, online: false } : p
-          ),
-        }))
-      );
-    };
+    // Also listen for socket connection event
+    if (typeof window !== 'undefined') {
+      window.addEventListener('socket:connected', handleSocketConnect);
+    }
 
-    // Register listeners
-    socketService.onNewMessage(handleNewMessage);
-    socketService.onTypingUpdate(handleTypingUpdate);
-    socketService.onMessageRead(handleMessageRead);
-    socketService.onUserOnline(handleUserOnline);
-    socketService.onUserOffline(handleUserOffline);
-
-    // Cleanup
+    // Cleanup on unmount or when selectedChat changes
     return () => {
-      socketService.removeListener('message:receive', handleNewMessage);
-      socketService.removeListener('typing:update', handleTypingUpdate);
-      socketService.removeListener('message:read', handleMessageRead);
-      socketService.removeListener('user:online', handleUserOnline);
-      socketService.removeListener('user:offline', handleUserOffline);
+      if (retryTimeout) clearTimeout(retryTimeout);
+      cleanupFunctions.forEach(cleanup => cleanup());
+      cleanupFunctions = [];
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('socket:connected', handleSocketConnect);
+      }
     };
   }, [selectedChat]);
 

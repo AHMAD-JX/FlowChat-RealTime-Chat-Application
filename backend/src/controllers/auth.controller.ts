@@ -93,12 +93,36 @@ export const login = catchAsync(
     }
 
     // Find user by email or phone
-    const user = await User.findOne({
-      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+    // Try email first
+    let user = await User.findOne({
+      email: emailOrPhone,
     }).select('+password');
 
-    // Check if user exists and password is correct
-    if (!user || !(await user.comparePassword(password))) {
+    // If not found by email, try phone number
+    if (!user) {
+      // Try exact phone match (with or without +)
+      const phoneVariations = [
+        emailOrPhone,
+        emailOrPhone.startsWith('+') ? emailOrPhone : `+${emailOrPhone}`,
+        emailOrPhone.startsWith('+') ? emailOrPhone.substring(1) : emailOrPhone,
+      ];
+
+      // Remove duplicates
+      const uniquePhoneVariations = [...new Set(phoneVariations)];
+
+      user = await User.findOne({
+        phone: { $in: uniquePhoneVariations },
+      }).select('+password');
+    }
+
+    // Check if user exists
+    if (!user) {
+      return next(new AppError('Invalid credentials', 401));
+    }
+
+    // Check if password is correct
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect) {
       return next(new AppError('Invalid credentials', 401));
     }
 
