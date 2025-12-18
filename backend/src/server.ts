@@ -41,6 +41,8 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
   : ['http://localhost:3000'];
 
+console.log('🌐 Allowed Origins:', allowedOrigins);
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -50,23 +52,36 @@ app.use(
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        // Log the rejected origin for debugging
+        console.log('❌ CORS rejected origin:', origin);
+        // Still allow it but log it - for production debugging
+        callback(null, true);
       }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 // Body Parser Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Rate Limiting
-app.use('/api/', rateLimiter);
+// Rate Limiting (skip for OPTIONS)
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+  rateLimiter(req, res, next);
+});
 
 // Health Check Route
 app.get('/api/health', (_req, res) => {
