@@ -45,6 +45,7 @@ export const register = catchAsync(
     const token = user.generateAuthToken();
 
     // Set cookie options
+    const sameSiteValue = process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const);
     const cookieOptions = {
       expires: new Date(
         Date.now() +
@@ -52,7 +53,7 @@ export const register = catchAsync(
       ),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: sameSiteValue,
     };
 
     // Send response with cookie
@@ -116,6 +117,7 @@ export const login = catchAsync(
     const token = user.generateAuthToken();
 
     // Set cookie options
+    const sameSiteValue = process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const);
     const cookieOptions = {
       expires: new Date(
         Date.now() +
@@ -123,7 +125,7 @@ export const login = catchAsync(
       ),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: sameSiteValue,
     };
 
     // Send response with cookie
@@ -234,6 +236,7 @@ export const updatePassword = catchAsync(
     const token = user.generateAuthToken();
 
     // Set cookie options
+    const sameSiteValue = process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const);
     const cookieOptions = {
       expires: new Date(
         Date.now() +
@@ -241,7 +244,7 @@ export const updatePassword = catchAsync(
       ),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      sameSite: sameSiteValue,
     };
 
     res
